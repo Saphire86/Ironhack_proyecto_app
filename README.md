@@ -1,8 +1,9 @@
 #### 🌍 Mini App de Streamlit (CSV + API + Visualizaciones)
-![App Preview](images/preview_app.png)
+
+![App Preview](images/preview_app.png)
 
 
-##🧩  Descripción
+## 🧩  Descripción
 
 Aplicación web desarrollada con **Streamlit*que combina datos locales con una API pública para explorar información geográfica y realizar visualizaciones interactivas. m### 🚀 Funcionalidades principales
 
@@ -15,24 +16,25 @@ Aplicación web desarrollada con **Streamlit*que combina datos locales con una A
 ---
 
 ## 🧱 Estructura del proyecto-app/
+```
 ├── data/
-│ └── pisos_chile_limpio_str
+│    └── pisos_chile_limpio_str
 ├── images/
-│   ├── preview_app.png                # Imagen ilustrativa del proyecto
-│   └── map_example.png                # Ejemplo del mapa Foliumeamlit.csv
+│    ├── preview_app.png                # Imagen ilustrativa del proyecto
+│    └── map_example.png                # Ejemplo del mapa Foliumeamlit.csv
 ├── src/
-│ ├── api_client.py # Función para consultar REST Countries
-│ ├── limpieza.py # Funciones de limpieza de datos
-│ └── visualizacion.py # Función show_comuna_map()
+│    ├── api_client.py # Función para consultar REST Countries
+│    ├── limpieza.py # Funciones de limpieza de datos
+│    └── visualizacion.py # Función show_comuna_map()
 ├── main.py # Aplicación principal Streamlit
 ├── requirements.txt # Dependencias del proyecto
-└── README.md # Document⚙️ ación
-
-## Instalar dependencias
+└── README.md # Documentación
+```
+## ⚙️ Instalar dependencias
 
 pip install -r requir
 
-## Ejecutar la aplicacion
+## ⚙️ Ejecutar la aplicacion
 
 streamlit run main.py
 ments.txt
@@ -96,6 +98,7 @@ La pestaña "Visualización de Datos" utiliza src/visualizacion.py para mostrar 
 
 Sarita & Rachel
 Proyecto desarrollado con Python, Pandas, Folium y Streamlit.Streamlit.
+
 
 
 
