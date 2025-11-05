@@ -1,7 +1,10 @@
-# visualization.py
 import streamlit as st
 import folium
 from streamlit_folium import st_folium
+import pandas as pd
+import matplotlib.pyplot as plt
+import streamlit.components.v1 as components
+import seaborn as sns
 
 provinces_comunas = {
     "Chacabuco": ["Colina", "Lampa", "Til Til"],
@@ -74,32 +77,40 @@ comuna_coordinates = {
     "Talagante": [-33.6844, -70.9248]
 }
 
+path= "/Users/saraynes.gs/Documents/Ironhack/BigData/Dia 34 - Streamlit_/tu-repo-streamlit/data/pisos_chile_limpio_streamlit.csv"
+df = pd.read_csv(path)
+df = df.drop(columns="id")
+
 def show_comuna_map():
-    # Check if in Streamlit app context
     if "know" not in st.session_state:
         st.session_state['know'] = None
     if 'comuna_selected' not in st.session_state:
         st.session_state['comuna_selected'] = None
     if 'show_map' not in st.session_state:
         st.session_state['show_map'] = False
+    if 'show_stats' not in st.session_state:
+        st.session_state['show_stats'] = False
 
+    # User makes selection regarding knowledge of province or comuna
     button_col1, button_col2 = st.columns(2)
     with button_col1:
-        if st.button("Sé la provincia"):
+        if st.button("Sé la provincia", key="province_button"):
             st.session_state['know'] = 'province'
     with button_col2:
-        if st.button("Sé la comuna"):
+        if st.button("Sé la comuna", key="comuna_button"):
             st.session_state['know'] = 'comuna'
 
+    # Dropdown logic for province or comuna
     if st.session_state['know'] == 'province':
-        province_selected = st.selectbox("Seleccione una provincia:", options=list(provinces_comunas.keys()))
+        province_selected = st.selectbox("Seleccione una provincia:", options=list(provinces_comunas.keys()), key="province_selectbox")
         comunas = provinces_comunas[province_selected]
-        st.session_state['comuna_selected'] = st.selectbox("Seleccione una comuna:", options=comunas)
+        st.session_state['comuna_selected'] = st.selectbox("Seleccione una comuna:", options=comunas, key="comuna_selectbox_province")
     elif st.session_state['know'] == 'comuna':
         all_comunas = [comuna for sublist in provinces_comunas.values() for comuna in sublist]
-        st.session_state['comuna_selected'] = st.selectbox("Seleccione una comuna:", options=all_comunas)
+        st.session_state['comuna_selected'] = st.selectbox("Seleccione una comuna:", options=all_comunas, key="comuna_selectbox_all")
 
-    if st.session_state['comuna_selected'] and st.button("Encontrar en el mapa"):
+    # Map display logic
+    if st.session_state['comuna_selected'] and st.button("Encontrar en el mapa", key="find_map_button"):
         st.session_state['show_map'] = True
 
     if st.session_state['show_map']:
@@ -111,3 +122,50 @@ def show_comuna_map():
             st_folium(m, width=700, height=500)
         else:
             st.warning("Coordenadas no disponibles para la comuna seleccionada.")
+
+    # Button to show statistics
+    if st.session_state['comuna_selected'] and st.button("Resumen de oferta", key="show_stats_button"):
+        st.session_state['show_stats'] = True
+
+    if st.session_state['show_stats']:
+        show_comuna_statistics(df, st.session_state['comuna_selected'])
+
+def show_comuna_statistics(all_data, comuna_selected):
+    st.subheader(f"Resumen de las ofertas en la comuna: {comuna_selected}")
+
+    # Transform selected comuna for consistency with data
+    comuna_selected = comuna_selected.lower()
+
+    # Filter data for the selected comuna
+    comuna_data = all_data[all_data['comuna'] == comuna_selected]
+
+    if comuna_data.empty:
+        st.write("No hay ofertas en esta comuna")
+    else:
+        st.write("Seleccione una característica para ver su distribución:")
+        
+        # Using Streamlit's container to hold buttons
+        with st.container():
+
+                if st.button("Precios", key="precios_button"):
+                    show_boxplots(all_data, comuna_data, 'precio', comuna_selected)
+
+                if st.button("Gastos Comunes", key="gastos_comunes_button"):
+                    show_boxplots(all_data, comuna_data, 'gastos_comunes', comuna_selected)
+
+                if st.button("Superficie Total", key="superficie_total_button"):
+                    show_boxplots(all_data, comuna_data, 'superficie_total', comuna_selected)
+
+def show_boxplots(all_data, comuna_data, variable, comuna_selected):
+    # Create boxplots for all comunas together
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.boxplot(x='comuna', y=variable, data=all_data, ax=ax, color='skyblue')
+    ax.set_title(f"Boxplot de {variable} para todas las comunas")
+    
+    # Rotate x-axis labels
+    plt.xticks(rotation=90)
+    plt.xlabel('Comuna')
+    plt.ylabel(variable.capitalize())
+
+    # Display the plot
+    st.pyplot(fig)
