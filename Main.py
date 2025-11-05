@@ -85,10 +85,8 @@ with tab3:
     
 with tab4:
     st.title("Santiago de Chile")
-    st.subheader("Comunas de la Región Metropolitana de Santiago de Chile") 
-
-    st.header("Encuentra la comuna")
-    
+    st.subheader("Encuentra la comuna en el mapa")
     from src.visualizacion import show_comuna_map
+    from src.visualizacion import show_comuna_statistics
     show_comuna_map()
     
